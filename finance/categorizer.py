@@ -1,0 +1,98 @@
+import yaml
+from pathlib import Path
+
+
+CONFIG_PATH = Path(__file__).resolve().parent.parent / "config" / "categories.yaml"
+
+
+BANK_CATEGORY_MAP = {
+    "restaurant-bar & café":                    "Dining Out",
+    "restaurant-restaurant":                    "Dining Out",
+    "merchandise & supplies-groceries":         "Food & Drink",
+    "groceries":                                "Food & Drink",
+    "merchandise & supplies-clothing stores":   "Shopping",
+    "merchandise & supplies-general retail":    "Shopping",
+    "merchandise & supplies-internet purchase": "Shopping",
+    "merchandise & supplies-mail order":        "Shopping",
+    "merchandise & supplies-department stores": "Shopping",
+    "merchandise & supplies-arts & jewelry":    "Shopping",
+    "merchandise & supplies-sporting goods stores": "Shopping",
+    "merchandise & supplies-music & video":     "Shopping",
+    "merchandise & supplies-book stores":       "Shopping",
+    "transportation-parking charges":           "Transportation",
+    "transportation-fuel":                      "Transportation",
+    "transportation-auto services":             "Transportation",
+    "transportation-vehicle leasing & purchase":"Transportation",
+    "transportation-rail services":             "Transportation",
+    "entertainment-other entertainment":        "Entertainment",
+    "entertainment-theatrical events":          "Entertainment",
+    "entertainment-general events":             "Entertainment",
+    "entertainment-sports events":              "Entertainment",
+    "entertainment-theme parks":                "Entertainment",
+    "entertainment-general attractions":        "Entertainment",
+    "entertainment-associations":               "Entertainment",
+    "travel-lodging":                           "Travel",
+    "travel-airline":                           "Travel",
+    "travel-travel agencies":                   "Travel",
+    "fees & adjustments-fees & adjustments":    "Bills & Utilities",
+    "fees & adjustments":                       "Bills & Utilities",
+    "business services-health care services":   "Health & Fitness",
+    "business services-other services":         "Bills & Utilities",
+    "business services-banking services":       "Bills & Utilities",
+    "business services-office supplies":        "Shopping",
+    "business services-printing & publishing":  "Bills & Utilities",
+    "business services-conferences & training": "Bills & Utilities",
+    "health & wellness":                        "Health & Fitness",
+    "other-miscellaneous":                      "Uncategorized",
+    "other-education":                          "Uncategorized",
+    "other-government services":                "Bills & Utilities",
+    "other-charities":                          "Uncategorized",
+    "personal":                                 "Personal Care",
+    "professional services":                    "Bills & Utilities",
+}
+
+
+def load_categories() -> dict:
+    with open(CONFIG_PATH, "r") as f:
+        return yaml.safe_load(f)["categories"]
+
+
+def categorize(description: str, chase_category: str = None, amex_category: str = None) -> str:
+    """
+    Returns a category name for a transaction description.
+    1. Try keyword matching against description first
+    2. Fall back to chase_category or amex_category if no match
+    3. Fall back to 'Uncategorized' as last resort
+    """
+    categories = load_categories()
+    description_lower = description.lower()
+
+    for category_name, config in categories.items():
+        if category_name == "Uncategorized":
+            continue
+        for keyword in config.get("keywords", []):
+            if keyword.lower() in description_lower:
+                return category_name
+
+    # Fall back to bank-provided category if available
+    if chase_category and str(chase_category).lower() not in ("nan", "none", ""):
+        normalized = BANK_CATEGORY_MAP.get(chase_category.lower())
+        if normalized:
+            return normalized
+        return chase_category
+
+    if amex_category and str(amex_category).lower() not in ("nan", "none", ""):
+        normalized = BANK_CATEGORY_MAP.get(amex_category.lower())
+        if normalized:
+            return normalized
+        return amex_category
+
+    return "Uncategorized"
+
+
+def get_category_colors() -> dict[str, str]:
+    """Returns a dict of {category_name: color} for use in visualizations."""
+    categories = load_categories()
+    return {name: config.get("color", "#BDC3C7") for name, config in categories.items()}
+
+

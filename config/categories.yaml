@@ -1,0 +1,166 @@
+categories:
+  Food & Drink:
+    color: "#FF6B6B"
+    keywords:
+      - dunkin
+      - starbucks
+      - chipotle
+      - mcdonald
+      - chick-fil-a
+      - subway
+      - domino
+      - doordash
+      - uber eats
+      - grubhub
+      - instacart
+      - wholefood
+      - trader joe
+      - kroger
+      - safeway
+      - sprouts
+
+  Dining Out:
+    color: "#FF8E53"
+    keywords:
+      - restaurant
+      - grill
+      - kitchen
+      - bistro
+      - cafe
+      - pizza
+      - sushi
+      - taco
+      - burger
+      - diner
+      - eatery
+
+  Transportation:
+    color: "#4ECDC4"
+    keywords:
+      - uber
+      - lyft
+      - metro
+      - parking
+      - chevron
+      - shell
+      - arco
+      - exxon
+      - mobil
+      - bp gas
+      - speedway
+      - circle k
+      - fuel
+
+  Shopping:
+    color: "#45B7D1"
+    keywords:
+      - amazon
+      - target
+      - walmart
+      - costco
+      - best buy
+      - home depot
+      - ikea
+      - marshalls
+      - tj maxx
+      - nordstrom
+      - macy
+      - ebay
+      - etsy
+
+  Health & Fitness:
+    color: "#96CEB4"
+    keywords:
+      - cvs
+      - walgreens
+      - rite aid
+      - pharmacy
+      - doctor
+      - dental
+      - vision
+      - gym
+      - planet fitness
+      - equinox
+      - medical
+
+  Entertainment:
+    color: "#9B59B6"
+    keywords:
+      - netflix
+      - spotify
+      - hulu
+      - disney
+      - apple.com/bill
+      - google play
+      - steam
+      - playstation
+      - xbox
+      - amc
+      - cinemark
+      - ticketmaster
+
+  Travel:
+    color: "#3498DB"
+    keywords:
+      - airline
+      - airbnb
+      - hotel
+      - marriott
+      - hilton
+      - delta
+      - united
+      - american air
+      - southwest
+      - expedia
+      - booking.com
+
+  Bills & Utilities:
+    color: "#E74C3C"
+    keywords:
+      - att
+      - verizon
+      - t-mobile
+      - comcast
+      - xfinity
+      - spectrum
+      - electric
+      - gas company
+      - water bill
+      - insurance
+      - geico
+      - state farm
+
+  Personal Care:
+    color: "#F39C12"
+    keywords:
+      - salon
+      - barber
+      - spa
+      - ulta
+      - sephora
+
+  Venmo, Zelle, & Paypal:
+    color: "#5B8CDB"
+    keywords:
+      - venmo
+      - zelle
+      - paypal
+
+  Transfer:
+    color: "#95A5A6"
+    keywords:
+      - acct xfer
+      - transfer
+
+  Income:
+    color: "#2ECC71"
+    keywords:
+      - payroll
+      - direct dep
+      - ach credit
+      - dividend
+      - interest paid
+
+  Uncategorized:
+    color: "#BDC3C7"
+    keywords: []
