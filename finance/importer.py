@@ -1,13 +1,13 @@
 import pandas as pd
 from finance.db import get_connection, init_db
 from finance.categorizer import categorize
-from finance.parsers import chase_checking, chase_credit, amex
-
+from finance.parsers import chase_checking, chase_credit, amex, venmo
 
 PARSERS = {
     "chase_checking": chase_checking.parse,
     "chase_credit":   chase_credit.parse,
     "amex":           amex.parse,
+    "venmo":          venmo.parse,
 }
 
 
@@ -64,6 +64,7 @@ def _insert_transactions(df: pd.DataFrame) -> tuple[int, int]:
 
         category_name = categorize(
             description=row["description"],
+            amount=row.get("amount"),
             chase_category=row.get("chase_category"),
             amex_category=row.get("amex_category"),
         )

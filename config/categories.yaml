@@ -1,24 +1,81 @@
 categories:
-  Food & Drink:
-    color: "#FF6B6B"
+  Groceries:
+    color: "#ADD8E6"
     keywords:
-      - dunkin
-      - starbucks
-      - chipotle
-      - mcdonald
-      - chick-fil-a
-      - subway
-      - domino
-      - doordash
-      - uber eats
-      - grubhub
       - instacart
       - wholefood
       - trader joe
       - kroger
+      - albertsons
+      - save mart
+      - 99 ranch
+      - mitsuwa
       - safeway
+      - ralphs
       - sprouts
-
+      - vons
+      - northgate
+      - grocery outlet
+      - la posta market
+      - superior super
+      - el super
+  
+  Food & Drink:
+    color: "#FF6B6B"
+    keywords:
+      - JOE  THE JUICE SFO L San Francisco CA
+      - jamba juice
+      - doordash
+      - uber eats
+      - grubhub
+      - ELPOLLOLOCO
+      - chipotle
+      - el tijuanazo
+      - tacos los cholos
+      - taco
+      - liquor mart anaheim ca
+      - paradise smoke shop
+      - teddys deli
+      - mcdonald
+      - wendy's
+      - jack in the box
+      - carls jr
+      - in-n-out
+      - habit
+      - burger
+      - Little Caesars
+      - pizza hut
+      - blaze
+      - domino
+      - chick-fil-a
+      - popeyes
+      - kfc
+      - raising canes
+      - DAVESHOTCHICKEN
+      - wingstop
+      - 7-eleven
+      - platinum liquor
+      - 'world oil #75 san jose'
+      - stadium liquor anaheim
+      - college drive in anaheim
+      - hudsonnews
+      - hudson book st
+      - chinese food
+      - panda express
+      - hot dog
+      - sandwich
+      - mendocino
+      - panera
+      - subway
+      - board and brew
+      - poke
+      - craftbowl
+      - fruit
+      - cookie
+      - donut
+      - baskin
+      - tst*el porteno
+  
   Dining Out:
     color: "#FF8E53"
     keywords:
@@ -29,10 +86,42 @@ categories:
       - cafe
       - pizza
       - sushi
-      - taco
-      - burger
       - diner
       - eatery
+      - terra laguna
+      - tst*terra
+      - tst* ballast point
+      - pho holy
+      - brewing
+      - stadium pepz
+      - villains
+      - rock a los angeles
+      - ramen
+
+  Vices: 
+    color: "#C1685B"
+    keywords:
+      - anaheim smoke shop
+      - smoke and vape
+      - fox pub
+      - bar
+      - pub
+      - tst* the biergarten
+      - nv lounge anaheim
+      - smoke shop
+
+  Coffee:
+    color: "#6F4E37"
+    keywords: 
+      - 7 leaves
+      - 7leaves
+      - BETTERBUZZ
+      - dutchbros
+      - moongoat
+      - coffee
+      - tea
+      - dunkin
+      - starbucks
 
   Transportation:
     color: "#4ECDC4"
@@ -41,6 +130,9 @@ categories:
       - lyft
       - metro
       - parking
+      - SPOTHERO
+      - city of newport beac
+      - uci tds
       - chevron
       - shell
       - arco
@@ -50,13 +142,19 @@ categories:
       - speedway
       - circle k
       - fuel
+      - WAVE-1
 
   Shopping:
     color: "#45B7D1"
     keywords:
       - amazon
+      - amzn
       - target
       - walmart
+      - kohls
+      - WAL-MART
+      - hobbylobb
+      - DEPOP
       - costco
       - best buy
       - home depot
@@ -64,9 +162,24 @@ categories:
       - marshalls
       - tj maxx
       - nordstrom
+      - h&m
       - macy
       - ebay
       - etsy
+      - ECO TOWN
+      - sporting goods
+      - dollar tree
+      - dollar tr
+      - lush
+      - claire's
+      - golfwang
+      - lonely star
+      - little light - bp
+      - zagg
+      - k-pop
+      - k- pop
+      - k+pop
+      - house of intuition
 
   Health & Fitness:
     color: "#96CEB4"
@@ -82,6 +195,8 @@ categories:
       - planet fitness
       - equinox
       - medical
+      - KP SCAL
+      - kaiser
 
   Entertainment:
     color: "#9B59B6"
@@ -98,6 +213,24 @@ categories:
       - amc
       - cinemark
       - ticketmaster
+      - tickpick
+      - glfmesa
+      - glf*mesa
+      - glf*nbgc
+      - THEISLANDSGOLFCENTER
+      - oso creek golf
+      - rancho san joaquin 4110
+      - mile square golf
+      - lake forrest 199 ps lake forest ca
+      - uci e-tickets
+      - fandango
+      - museum
+      - zoo
+      - 91114-treetops canteen
+      - karaoke
+      - intuit dome
+      - sofi sta
+      - the island golf
 
   Travel:
     color: "#3498DB"
@@ -114,6 +247,7 @@ categories:
       - expedia
       - booking.com
 
+
   Bills & Utilities:
     color: "#E74C3C"
     keywords:
@@ -129,6 +263,11 @@ categories:
       - insurance
       - geico
       - state farm
+    amount_keywords:
+      - description: zelle payment to miguel
+        amount: 195.00
+      - description: zelle payment to miguel
+        amount: 87.00
 
   Personal Care:
     color: "#F39C12"
@@ -138,19 +277,8 @@ categories:
       - spa
       - ulta
       - sephora
+      - 5 star cleaners # hemming clothes
 
-  Venmo, Zelle, & Paypal:
-    color: "#5B8CDB"
-    keywords:
-      - venmo
-      - zelle
-      - paypal
-
-  Transfer:
-    color: "#95A5A6"
-    keywords:
-      - acct xfer
-      - transfer
 
   Income:
     color: "#2ECC71"
@@ -160,6 +288,88 @@ categories:
       - ach credit
       - dividend
       - interest paid
+
+  Rent:
+    color: "#E67E22"
+    keywords:
+      - bilt payment
+      - biltrent
+      - greystar
+
+  Student Loans:
+    color: "#8E44AD"
+    keywords:
+      - advs ed serv
+      - studntloan
+      - educational comp
+      - epayment
+  
+
+  Car Payment:
+    color: "#C0392B"
+    keywords:
+      - sdccu
+
+  Auto Services:
+    color: "#E74C3C"
+    keywords:
+      - an honda
+      - honda costa mesa
+      - soap city
+
+  Professional Development:
+    color: "#2980B9"
+    keywords:
+      - vue testing exam
+      - wl *vue*
+
+
+  Zelle, & Paypal:
+    color: "#5B8CDB"
+    keywords:
+      - zelle
+      - paypal
+      - apple cash sent
+
+  Transfer:
+    color: "#95A5A6"
+    keywords:
+      - acct xfer
+      - transfer
+
+  ATM & Cash:
+    color: "#7F8C8D"
+    keywords:
+      - atm withdrawal
+      - non-chase atm
+
+  Fines & Fees:
+    color: "#D35400"
+    keywords:
+      - st of ca dmv
+      - orange county su payment
+      - state of calif dmv
+      - dmv fee
+
+  Taxes: 
+    color: "#757484"
+    keywords: 
+      - freetaxusa
+
+  Miscellaneous: 
+    color: "#D3D3D3"
+    keywords:
+      - usps
+      - ups
+
+  Excluded:
+    color: "#2C3E50"
+    keywords:
+      - american express ach pmt
+      - payment to chase card
+      - vanguard buy
+      - kraken
+      - venmo
 
   Uncategorized:
     color: "#BDC3C7"

@@ -57,16 +57,20 @@ def load_categories() -> dict:
         return yaml.safe_load(f)["categories"]
 
 
-def categorize(description: str, chase_category: str = None, amex_category: str = None) -> str:
-    """
-    Returns a category name for a transaction description.
-    1. Try keyword matching against description first
-    2. Fall back to chase_category or amex_category if no match
-    3. Fall back to 'Uncategorized' as last resort
-    """
+def categorize(description: str, amount: float = None, chase_category: str = None, amex_category: str = None) -> str:
     categories = load_categories()
     description_lower = description.lower()
 
+    # First pass: check amount-specific rules
+    if amount is not None:
+        for category_name, config in categories.items():
+            for rule in config.get("amount_keywords", []):
+                desc_match = rule["description"].lower() in description_lower
+                amount_match = abs(abs(amount) - abs(rule["amount"])) < 0.01
+                if desc_match and amount_match:
+                    return category_name
+
+    # Second pass: regular keyword matching
     for category_name, config in categories.items():
         if category_name == "Uncategorized":
             continue
@@ -74,7 +78,7 @@ def categorize(description: str, chase_category: str = None, amex_category: str 
             if keyword.lower() in description_lower:
                 return category_name
 
-    # Fall back to bank-provided category if available
+    # Fall back to bank-provided category
     if chase_category and str(chase_category).lower() not in ("nan", "none", ""):
         normalized = BANK_CATEGORY_MAP.get(chase_category.lower())
         if normalized:

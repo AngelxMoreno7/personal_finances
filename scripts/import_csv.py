@@ -20,7 +20,7 @@ def main():
     parser.add_argument(
         "source",
         type=str,
-        choices=["chase_checking", "chase_credit", "amex"],
+        choices=["chase_checking", "chase_credit", "amex", "venmo"],
         help="Which bank/account this CSV came from"
     )
 
