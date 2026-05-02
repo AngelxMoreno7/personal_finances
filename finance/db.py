@@ -43,6 +43,7 @@ def init_db():
             reference        TEXT,
             account_id       INTEGER REFERENCES accounts(id),
             category_id      INTEGER REFERENCES categories(id),
+            manually_categorized INTEGER DEFAULT 0,
             hash             TEXT NOT NULL UNIQUE
         );
     """)

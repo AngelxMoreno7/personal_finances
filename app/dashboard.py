@@ -16,22 +16,18 @@ st.set_page_config(
     layout="wide"
 )
 
-# ── Constants ─────────────────────────────────────────────────────────────────
-EXCLUDE_CATEGORIES = {"Transfer"}
-EXCLUDE_TRANSACTION_TYPES = {"Payment"}  # credit card payments
-
 # ── Data loading ──────────────────────────────────────────────────────────────
 @st.cache_data(ttl=300)
 def load_transactions() -> pd.DataFrame:
     conn = get_connection()
     df = pd.read_sql_query("""
         SELECT
+            t.id,
             t.date,
             t.description,
             t.amount,
             t.type,
             t.transaction_type,
-            t.account_id,
             a.name        AS account_name,
             a.account_type,
             c.name        AS category,
@@ -40,18 +36,12 @@ def load_transactions() -> pd.DataFrame:
         JOIN accounts a ON t.account_id = a.id
         JOIN categories c ON t.category_id = c.id
         WHERE
-            -- Exclude savings transfers
-            c.name NOT IN ('Transfer')
-            -- Exclude credit card payment rows (checking side of the payment)
-            AND NOT (a.account_type = 'checking' AND t.amount < -200
-                     AND t.type IN ('ACH_DEBIT', 'ACCT_XFER'))
-            -- Exclude credit card payment rows (credit card side)
-            AND NOT (a.account_type = 'credit' AND t.transaction_type = 'Payment')
-            -- Only count spending (positive amounts on credit = purchase, negative on checking = spend)
+            c.name NOT IN ('Transfer', 'Excluded')
             AND (
-                (a.account_type = 'credit'   AND t.amount > 0)
-                OR
-                (a.account_type = 'checking' AND t.amount < 0)
+                (a.account_type = 'credit' AND t.amount > 0)
+                OR (a.account_type = 'checking' AND t.amount < 0)
+                OR (a.account_type = 'checking' AND t.amount > 0 AND c.name IN ('Venmo, Zelle, & Paypal', 'Income'))
+                OR (a.account_type = 'venmo')
             )
     """, conn)
     conn.close()
@@ -59,7 +49,11 @@ def load_transactions() -> pd.DataFrame:
     df["date"] = pd.to_datetime(df["date"])
     df["month"] = df["date"].dt.to_period("M").dt.to_timestamp()
     df["year"] = df["date"].dt.year
-    df["spend"] = df["amount"].abs()
+    # For venmo, preserve sign so incoming payments offset spending
+    df["spend"] = df.apply(
+        lambda row: row["amount"] if row["account_type"] == "venmo" else abs(row["amount"]),
+        axis=1
+    )
 
     return df
 
@@ -68,7 +62,6 @@ def load_transactions() -> pd.DataFrame:
 def render_sidebar(df: pd.DataFrame):
     st.sidebar.title("Filters")
 
-    # Date range
     min_date = df["date"].min().date()
     max_date = df["date"].max().date()
     start_date, end_date = st.sidebar.date_input(
@@ -78,7 +71,6 @@ def render_sidebar(df: pd.DataFrame):
         max_value=max_date,
     )
 
-    # Categories
     all_categories = sorted(df["category"].unique().tolist())
     selected_categories = st.sidebar.multiselect(
         "Categories",
@@ -86,10 +78,36 @@ def render_sidebar(df: pd.DataFrame):
         default=all_categories,
     )
 
-    return pd.Timestamp(start_date), pd.Timestamp(end_date), selected_categories
+    all_accounts = sorted(df["account_name"].unique().tolist())
+    selected_accounts = st.sidebar.multiselect(
+        "Accounts",
+        options=all_accounts,
+        default=all_accounts,
+    )
+
+    return (
+        pd.Timestamp(start_date),
+        pd.Timestamp(end_date),
+        selected_categories,
+        selected_accounts,
+    )
 
 
-# ── Charts ────────────────────────────────────────────────────────────────────
+# ── Summary metrics ───────────────────────────────────────────────────────────
+def render_summary_metrics(df: pd.DataFrame):
+    total_spend = df["spend"].sum()
+    avg_monthly = df.groupby("month")["spend"].sum().mean()
+    top_category = df.groupby("category")["spend"].sum().idxmax()
+    total_transactions = len(df)
+
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("Total spend",        f"${total_spend:,.2f}")
+    col2.metric("Avg monthly spend",  f"${avg_monthly:,.2f}")
+    col3.metric("Top category",       top_category)
+    col4.metric("Transactions",       f"{total_transactions:,}")
+
+
+# ── Spending trend ────────────────────────────────────────────────────────────
 def render_spending_trend(df: pd.DataFrame, colors: dict):
     st.subheader("Spending trend over time")
 
@@ -120,11 +138,13 @@ def render_spending_trend(df: pd.DataFrame, colors: dict):
     st.plotly_chart(fig, use_container_width=True)
 
 
+# ── Monthly breakdown ─────────────────────────────────────────────────────────
 def render_monthly_breakdown(df: pd.DataFrame, colors: dict):
     st.subheader("Monthly spending by category")
 
-    # Month selector
-    available_months = sorted(df["month"].dt.strftime("%B %Y").unique().tolist(), reverse=True)
+    available_months = sorted(
+        df["month"].dt.strftime("%B %Y").unique().tolist(), reverse=True
+    )
     selected_month_str = st.selectbox("Select month", available_months)
     selected_month = pd.to_datetime(selected_month_str, format="%B %Y")
 
@@ -133,7 +153,6 @@ def render_monthly_breakdown(df: pd.DataFrame, colors: dict):
     col1, col2 = st.columns([1, 1])
 
     with col1:
-        # Pie chart
         category_totals = (
             month_df.groupby("category")["spend"]
             .sum()
@@ -157,7 +176,6 @@ def render_monthly_breakdown(df: pd.DataFrame, colors: dict):
         st.plotly_chart(fig, use_container_width=True)
 
     with col2:
-        # Bar chart sorted by spend
         fig = px.bar(
             category_totals,
             x="spend",
@@ -166,10 +184,12 @@ def render_monthly_breakdown(df: pd.DataFrame, colors: dict):
             color="category",
             color_discrete_map=colors,
             labels={"spend": "Amount ($)", "category": ""},
+            text=category_totals["spend"].apply(lambda x: f"${x:,.2f}"),
         )
+        fig.update_traces(textposition="outside")
         fig.update_layout(
             showlegend=False,
-            margin=dict(t=20, b=20),
+            margin=dict(t=20, b=20, r=80),
             plot_bgcolor="rgba(0,0,0,0)",
             paper_bgcolor="rgba(0,0,0,0)",
             xaxis=dict(gridcolor="rgba(128,128,128,0.15)"),
@@ -178,19 +198,97 @@ def render_monthly_breakdown(df: pd.DataFrame, colors: dict):
         st.plotly_chart(fig, use_container_width=True)
 
 
-def render_summary_metrics(df: pd.DataFrame, start_date, end_date):
-    filtered = df[(df["date"] >= start_date) & (df["date"] <= end_date)]
+# ── Transaction table ─────────────────────────────────────────────────────────
+def render_transaction_table(df: pd.DataFrame, all_categories: list):
+    st.subheader("Transactions")
 
-    total_spend = filtered["spend"].sum()
-    avg_monthly = filtered.groupby("month")["spend"].sum().mean()
-    top_category = filtered.groupby("category")["spend"].sum().idxmax()
-    total_transactions = len(filtered)
+    # ── Filters ───────────────────────────────────────────────────────────────
+    col1, col2, col3, col4 = st.columns([2, 1, 1, 1])
 
-    col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Total spend", f"${total_spend:,.2f}")
-    col2.metric("Avg monthly spend", f"${avg_monthly:,.2f}")
-    col3.metric("Top category", top_category)
-    col4.metric("Transactions", f"{total_transactions:,}")
+    with col1:
+        search = st.text_input("Search descriptions", placeholder="e.g. amazon, uber, starbucks...")
+    with col2:
+        amount_filter = st.selectbox("Amount", ["All", "Spending (positive)", "Offsets (negative)"])
+    with col3:
+        category_options = ["All"] + sorted(df["category"].unique().tolist())
+        selected_category = st.selectbox("Category", category_options)
+    with col4:
+        account_options = ["All"] + sorted(df["account_name"].unique().tolist())
+        selected_account = st.selectbox("Account", account_options)
+
+    # ── Apply filters ─────────────────────────────────────────────────────────
+    table_df = df.copy()
+
+    if search:
+        table_df = table_df[
+            table_df["description"].str.contains(search, case=False, na=False)
+        ]
+    if selected_account != "All":
+        table_df = table_df[table_df["account_name"] == selected_account]
+    if selected_category != "All":
+        table_df = table_df[table_df["category"] == selected_category]
+    if amount_filter == "Spending (positive)":
+        table_df = table_df[table_df["spend"] > 0]
+    elif amount_filter == "Offsets (negative)":
+        table_df = table_df[table_df["spend"] < 0]
+
+    # ── Sort and format ───────────────────────────────────────────────────────
+    table_df = table_df.sort_values("date", ascending=False)
+    table_df["date"] = table_df["date"].dt.strftime("%Y-%m-%d")
+    table_df["Amount"] = table_df["spend"].apply(
+        lambda x: f"-${abs(x):,.2f}" if x < 0 else f"${x:,.2f}"
+    )
+
+    display_df = table_df[["id", "date", "description", "Amount", "category", "account_name"]].rename(columns={
+        "date":         "Date",
+        "description":  "Description",
+        "category":     "Category",
+        "account_name": "Account",
+    })
+
+    # ── Editable table ────────────────────────────────────────────────────────
+    edited_df = st.data_editor(
+        display_df,
+        use_container_width=True,
+        height=400,
+        hide_index=True,
+        disabled=["id", "Date", "Description", "Amount", "Account"],
+        column_config={
+            "id": None,
+            "Category": st.column_config.SelectboxColumn(
+                "Category",
+                options=all_categories,
+                required=True,
+            ),
+        },
+        key="transaction_table",
+    )
+
+    # ── Save changes ──────────────────────────────────────────────────────────
+    changes = edited_df[edited_df["Category"] != display_df["Category"]]
+    if not changes.empty:
+        conn = get_connection()
+        cursor = conn.cursor()
+        saved = 0
+        for _, row in changes.iterrows():
+            cursor.execute("SELECT id FROM categories WHERE name = ?", (row["Category"],))
+            cat_row = cursor.fetchone()
+            if cat_row:
+                cursor.execute("""
+                    UPDATE transactions
+                    SET category_id = ?, manually_categorized = 1
+                    WHERE id = ?
+                """, (cat_row["id"], row["id"]))
+                saved += 1
+        conn.commit()
+        conn.close()
+
+        if saved:
+            st.success(f"{saved} transaction(s) updated.")
+            st.cache_data.clear()
+            st.rerun()
+
+    st.caption(f"{len(table_df):,} transactions")
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
@@ -200,20 +298,23 @@ def main():
     df = load_transactions()
     colors = get_category_colors()
 
-    start_date, end_date, selected_categories = render_sidebar(df)
+    start_date, end_date, selected_categories, selected_accounts = render_sidebar(df)
 
-    # Apply filters
     filtered_df = df[
         (df["date"] >= start_date) &
         (df["date"] <= end_date) &
-        (df["category"].isin(selected_categories))
+        (df["category"].isin(selected_categories)) &
+        (df["account_name"].isin(selected_accounts))
     ]
 
-    render_summary_metrics(filtered_df, start_date, end_date)
+    render_summary_metrics(filtered_df)
     st.divider()
     render_spending_trend(filtered_df, colors)
     st.divider()
     render_monthly_breakdown(filtered_df, colors)
+    st.divider()
+    all_categories = sorted(df["category"].unique().tolist())
+    render_transaction_table(filtered_df, all_categories)
 
 
 if __name__ == "__main__":
