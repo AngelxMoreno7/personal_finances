@@ -3,7 +3,7 @@ import pandas as pd
 from pathlib import Path
 
 
-EXCLUDE_TYPES = {"Standard Transfer", "Merchant Transfer", "Charge"}
+EXCLUDE_TYPES = {"Standard Transfer", "Merchant Transfer"}
 
 
 def _parse_amount(amount_str: str) -> float | None:

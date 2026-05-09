@@ -37,22 +37,26 @@ def load_transactions() -> pd.DataFrame:
         JOIN categories c ON t.category_id = c.id
         WHERE
             c.name NOT IN ('Transfer', 'Excluded')
-            AND (
-                (a.account_type = 'credit' AND t.amount > 0)
-                OR (a.account_type = 'checking' AND t.amount < 0)
-                OR (a.account_type = 'checking' AND t.amount > 0 AND c.name IN ('Venmo, Zelle, & Paypal', 'Income'))
-                OR (a.account_type = 'venmo')
+        AND (
+            a.account_type = 'credit'
+            OR a.account_type = 'checking'
+            OR a.account_type = 'venmo'
             )
     """, conn)
     conn.close()
 
     df["date"] = pd.to_datetime(df["date"])
-    df["month"] = df["date"].dt.to_period("M").dt.to_timestamp()
+    df["month"] = df["date"].dt.to_period("M")
+    df["month_str"] = df["date"].dt.strftime("%Y-%m")
     df["year"] = df["date"].dt.year
     # For venmo, preserve sign so incoming payments offset spending
     df["spend"] = df.apply(
-        lambda row: row["amount"] if row["account_type"] == "venmo" else abs(row["amount"]),
-        axis=1
+    lambda row: row["amount"] if row["account_type"] == "venmo"
+    else abs(row["amount"]) if (
+        (row["account_type"] == "credit" and row["amount"] > 0) or
+        (row["account_type"] == "checking" and row["amount"] < 0)
+    ) else -abs(row["amount"]),
+    axis=1
     )
 
     return df
@@ -72,10 +76,12 @@ def render_sidebar(df: pd.DataFrame):
     )
 
     all_categories = sorted(df["category"].unique().tolist())
+    if "Excluded" not in all_categories:
+        all_categories = sorted(all_categories + ["Excluded"])
     selected_categories = st.sidebar.multiselect(
         "Categories",
         options=all_categories,
-        default=all_categories,
+        default=[c for c in all_categories if c != "Income"],
     )
 
     all_accounts = sorted(df["account_name"].unique().tolist())
@@ -96,7 +102,7 @@ def render_sidebar(df: pd.DataFrame):
 # ── Summary metrics ───────────────────────────────────────────────────────────
 def render_summary_metrics(df: pd.DataFrame):
     total_spend = df["spend"].sum()
-    avg_monthly = df.groupby("month")["spend"].sum().mean()
+    avg_monthly = df.groupby("month_str")["spend"].sum().mean()
     top_category = df.groupby("category")["spend"].sum().idxmax()
     total_transactions = len(df)
 
@@ -112,18 +118,19 @@ def render_spending_trend(df: pd.DataFrame, colors: dict):
     st.subheader("Spending trend over time")
 
     monthly = (
-        df.groupby(["month", "category"])["spend"]
+        df.groupby(["month_str", "category"])["spend"]
         .sum()
         .reset_index()
+        .sort_values("month_str")
     )
 
     fig = px.bar(
         monthly,
-        x="month",
+        x="month_str",
         y="spend",
         color="category",
         color_discrete_map=colors,
-        labels={"month": "", "spend": "Amount ($)", "category": "Category"},
+        labels={"month_str": "", "spend": "Amount ($)", "category": "Category"},
         barmode="stack",
     )
     fig.update_layout(
@@ -142,13 +149,14 @@ def render_spending_trend(df: pd.DataFrame, colors: dict):
 def render_monthly_breakdown(df: pd.DataFrame, colors: dict):
     st.subheader("Monthly spending by category")
 
-    available_months = sorted(
-        df["month"].dt.strftime("%B %Y").unique().tolist(), reverse=True
-    )
-    selected_month_str = st.selectbox("Select month", available_months)
-    selected_month = pd.to_datetime(selected_month_str, format="%B %Y")
+    # month_str is already "YYYY-MM" so just convert for display
+    available_months = sorted(df["month_str"].unique().tolist(), reverse=True)
+    display_months = {m: pd.to_datetime(m).strftime("%B %Y") for m in available_months}
 
-    month_df = df[df["month"] == selected_month]
+    selected_display = st.selectbox("Select month", list(display_months.values()))
+    selected_month_str = [k for k, v in display_months.items() if v == selected_display][0]
+
+    month_df = df[df["month_str"] == selected_month_str]
 
     col1, col2 = st.columns([1, 1])
 
@@ -203,16 +211,18 @@ def render_transaction_table(df: pd.DataFrame, all_categories: list):
     st.subheader("Transactions")
 
     # ── Filters ───────────────────────────────────────────────────────────────
-    col1, col2, col3, col4 = st.columns([2, 1, 1, 1])
+    col1, col2, col3, col4, col5 = st.columns([2, 1, 1, 1, 1])
 
     with col1:
         search = st.text_input("Search descriptions", placeholder="e.g. amazon, uber, starbucks...")
     with col2:
-        amount_filter = st.selectbox("Amount", ["All", "Spending (positive)", "Offsets (negative)"])
+        min_amount = st.number_input("Min amount", value=None, placeholder="e.g. -50", step=1.0)
     with col3:
+        max_amount = st.number_input("Max amount", value=None, placeholder="e.g. 200", step=1.0)
+    with col4:
         category_options = ["All"] + sorted(df["category"].unique().tolist())
         selected_category = st.selectbox("Category", category_options)
-    with col4:
+    with col5:
         account_options = ["All"] + sorted(df["account_name"].unique().tolist())
         selected_account = st.selectbox("Account", account_options)
 
@@ -227,10 +237,10 @@ def render_transaction_table(df: pd.DataFrame, all_categories: list):
         table_df = table_df[table_df["account_name"] == selected_account]
     if selected_category != "All":
         table_df = table_df[table_df["category"] == selected_category]
-    if amount_filter == "Spending (positive)":
-        table_df = table_df[table_df["spend"] > 0]
-    elif amount_filter == "Offsets (negative)":
-        table_df = table_df[table_df["spend"] < 0]
+    if min_amount is not None:
+        table_df = table_df[table_df["spend"] >= min_amount]
+    if max_amount is not None:
+        table_df = table_df[table_df["spend"] <= max_amount]
 
     # ── Sort and format ───────────────────────────────────────────────────────
     table_df = table_df.sort_values("date", ascending=False)
@@ -314,6 +324,8 @@ def main():
     render_monthly_breakdown(filtered_df, colors)
     st.divider()
     all_categories = sorted(df["category"].unique().tolist())
+    if "Excluded" not in all_categories:
+        all_categories = sorted(all_categories + ["Excluded"])
     render_transaction_table(filtered_df, all_categories)
 
 

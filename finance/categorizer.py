@@ -55,11 +55,21 @@ BANK_CATEGORY_MAP = {
 def load_categories() -> dict:
     with open(CONFIG_PATH, "r") as f:
         return yaml.safe_load(f)["categories"]
+    
+    
+FORCE_UNCATEGORIZED = [
+    "offer:",
+]
 
 
 def categorize(description: str, amount: float = None, chase_category: str = None, amex_category: str = None) -> str:
     categories = load_categories()
     description_lower = description.lower()
+
+    # Force uncategorized for specific patterns regardless of bank category
+    for pattern in FORCE_UNCATEGORIZED:
+        if pattern.lower() in description_lower:
+            return "Uncategorized"
 
     # First pass: check amount-specific rules
     if amount is not None:

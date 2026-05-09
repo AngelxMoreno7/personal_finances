@@ -1,4 +1,14 @@
 categories:
+
+  Income:
+    color: "#2ECC71"
+    keywords:
+      - payroll
+      - direct dep
+      - ach credit
+      - dividend
+      - interest paid
+
   Groceries:
     color: "#ADD8E6"
     keywords:
@@ -19,6 +29,8 @@ categories:
       - la posta market
       - superior super
       - el super
+      - liquor mart anaheim ca
+      - Water Gourmet Anaheim CA
   
   Food & Drink:
     color: "#FF6B6B"
@@ -33,7 +45,7 @@ categories:
       - el tijuanazo
       - tacos los cholos
       - taco
-      - liquor mart anaheim ca
+      
       - paradise smoke shop
       - teddys deli
       - mcdonald
@@ -131,13 +143,14 @@ categories:
       - metro
       - parking
       - SPOTHERO
+      - parkmobile
       - city of newport beac
       - uci tds
       - chevron
       - shell
       - arco
+      - costco gas
       - exxon
-      - mobil
       - bp gas
       - speedway
       - circle k
@@ -155,7 +168,6 @@ categories:
       - WAL-MART
       - hobbylobb
       - DEPOP
-      - costco
       - best buy
       - home depot
       - ikea
@@ -246,6 +258,7 @@ categories:
       - southwest
       - expedia
       - booking.com
+      - amex trvl
 
 
   Bills & Utilities:
@@ -274,20 +287,12 @@ categories:
     keywords:
       - salon
       - barber
-      - spa
       - ulta
       - sephora
       - 5 star cleaners # hemming clothes
 
 
-  Income:
-    color: "#2ECC71"
-    keywords:
-      - payroll
-      - direct dep
-      - ach credit
-      - dividend
-      - interest paid
+
 
   Rent:
     color: "#E67E22"
@@ -316,12 +321,15 @@ categories:
       - an honda
       - honda costa mesa
       - soap city
+      - CULVER AUTO SPA IRVINE CA
+      - smog check
 
   Professional Development:
     color: "#2980B9"
     keywords:
       - vue testing exam
       - wl *vue*
+      - squarespace
 
 
   Zelle, & Paypal:
@@ -355,6 +363,8 @@ categories:
     color: "#757484"
     keywords: 
       - freetaxusa
+      - tax ref
+      - tax bd
 
   Miscellaneous: 
     color: "#D3D3D3"
@@ -370,6 +380,8 @@ categories:
       - vanguard buy
       - kraken
       - venmo
+      - Payment Thank You-Mobile
+      - MOBILE PAYMENT - THANK YOU
 
   Uncategorized:
     color: "#BDC3C7"
