@@ -36,7 +36,7 @@ def load_transactions() -> pd.DataFrame:
         JOIN accounts a ON t.account_id = a.id
         JOIN categories c ON t.category_id = c.id
         WHERE
-            c.name NOT IN ('Transfer', 'Excluded')
+            c.name NOT IN ('Excluded')
         AND (
             a.account_type = 'credit'
             OR a.account_type = 'checking'
@@ -139,7 +139,7 @@ def render_spending_trend(df: pd.DataFrame, colors: dict):
         margin=dict(t=60, b=40),
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
-        xaxis=dict(showgrid=False),
+        xaxis=dict(showgrid=False, type="category"),
         yaxis=dict(gridcolor="rgba(128,128,128,0.15)"),
     )
     st.plotly_chart(fig, use_container_width=True)

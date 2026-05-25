@@ -1,4 +1,21 @@
 categories:
+  Excluded:
+    color: "#2C3E50"
+    keywords:
+      - american express ach pmt
+      - payment to chase card
+      - vanguard buy
+      - kraken
+      - venmo
+      - Payment Thank You-Mobile
+      - MOBILE PAYMENT - THANK YOU
+      - "to SAV ...7723"
+      - "from SAV ...7723"
+
+  Requires Manul categorization:
+    color: "#FFFFFF"
+    keywords: 
+      - amex dining credit
 
   Income:
     color: "#2ECC71"
@@ -41,19 +58,31 @@ categories:
       - uber eats
       - grubhub
       - ELPOLLOLOCO
+      - taco bell
+      - del taco
       - chipotle
       - el tijuanazo
+      - carnitas el rey
       - tacos los cholos
+      - tacos el patron
+      - taco stand
+      - TAQUEANAHEIM
+      - primecut
+      - los de juarez
       - taco
-      
+      - DLRBUENAVISTACHURRO
+      - dlr ice cream
       - paradise smoke shop
       - teddys deli
+      - willys eatery
       - mcdonald
+      - burger king
       - wendy's
       - jack in the box
       - carls jr
       - in-n-out
       - habit
+      - 5guys
       - burger
       - Little Caesars
       - pizza hut
@@ -74,19 +103,23 @@ categories:
       - hudson book st
       - chinese food
       - panda express
+      - hong kong express
       - hot dog
       - sandwich
+      - kookoo grill
       - mendocino
       - panera
       - subway
       - board and brew
       - poke
+      - pokinometry
       - craftbowl
       - fruit
       - cookie
+      - krispy kreme
       - donut
       - baskin
-      - tst*el porteno
+
   
   Dining Out:
     color: "#FF8E53"
@@ -95,7 +128,6 @@ categories:
       - grill
       - kitchen
       - bistro
-      - cafe
       - pizza
       - sushi
       - diner
@@ -106,9 +138,14 @@ categories:
       - pho holy
       - brewing
       - stadium pepz
+      - cruisers
+      - thegarret
+      - tst* el porteno
       - villains
       - rock a los angeles
       - ramen
+      - shabu
+      - red robin
 
   Vices: 
     color: "#C1685B"
@@ -116,6 +153,11 @@ categories:
       - anaheim smoke shop
       - smoke and vape
       - fox pub
+      - dlr oga's cantina
+      - dlr paradise beer
+      - magic land market
+      - paper plane
+      - muldoons irish newport beach
       - bar
       - pub
       - tst* the biergarten
@@ -129,6 +171,7 @@ categories:
       - 7leaves
       - BETTERBUZZ
       - dutchbros
+      - dutch bros
       - moongoat
       - coffee
       - tea
@@ -164,8 +207,8 @@ categories:
       - amzn
       - target
       - walmart
-      - kohls
       - WAL-MART
+      - kohls
       - hobbylobb
       - DEPOP
       - best buy
@@ -175,6 +218,7 @@ categories:
       - tj maxx
       - nordstrom
       - h&m
+      - uniqlo
       - macy
       - ebay
       - etsy
@@ -185,6 +229,7 @@ categories:
       - lush
       - claire's
       - golfwang
+      - basketcase
       - lonely star
       - little light - bp
       - zagg
@@ -192,6 +237,11 @@ categories:
       - k- pop
       - k+pop
       - house of intuition
+      - fragrancenet
+      - jomashop
+      - redbubble
+      - dhgate
+      - fanatics
 
   Health & Fitness:
     color: "#96CEB4"
@@ -204,6 +254,7 @@ categories:
       - dental
       - vision
       - gym
+      - beach city sp
       - planet fitness
       - equinox
       - medical
@@ -225,6 +276,8 @@ categories:
       - amc
       - cinemark
       - ticketmaster
+      - "axs.com"
+      - tcktweb
       - tickpick
       - glfmesa
       - glf*mesa
@@ -243,6 +296,11 @@ categories:
       - intuit dome
       - sofi sta
       - the island golf
+      - alcatraz
+    amount_keywords:
+      - description: APPLE.COM/BILL
+        amount: 12.99
+
 
   Travel:
     color: "#3498DB"
@@ -253,6 +311,7 @@ categories:
       - marriott
       - hilton
       - delta
+      - frontier
       - united
       - american air
       - southwest
@@ -281,6 +340,8 @@ categories:
         amount: 195.00
       - description: zelle payment to miguel
         amount: 87.00
+      - description: APPLE.COM/BILL
+        amount: 2.99
 
   Personal Care:
     color: "#F39C12"
@@ -320,6 +381,7 @@ categories:
     keywords:
       - an honda
       - honda costa mesa
+      - hardin honda
       - soap city
       - CULVER AUTO SPA IRVINE CA
       - smog check
@@ -372,16 +434,6 @@ categories:
       - usps
       - ups
 
-  Excluded:
-    color: "#2C3E50"
-    keywords:
-      - american express ach pmt
-      - payment to chase card
-      - vanguard buy
-      - kraken
-      - venmo
-      - Payment Thank You-Mobile
-      - MOBILE PAYMENT - THANK YOU
 
   Uncategorized:
     color: "#BDC3C7"
