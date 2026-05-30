@@ -62,9 +62,178 @@ def load_transactions() -> pd.DataFrame:
 
     return df
 
+def inject_theme(theme: str):
+    themes = {
+        "Linear/Notion Dark": {
+            "bg":          "#0F0F0F",
+            "card":        "#1A1A1A",
+            "accent":      "#7C5CFC",
+            "accent2":     "#A78BFA",
+            "text":        "#FFFFFF",
+            "subtext":     "#A0A0A0",
+            "border":      "#2A2A2A",
+            "pill_bg":     "#2A2A2A",
+            "pill_text":   "#A78BFA",
+        },
+        "Arctic": {
+            "bg":          "#F7F9FC",
+            "card":        "#FFFFFF",
+            "accent":      "#2563EB",
+            "accent2":     "#60A5FA",
+            "text":        "#1E293B",
+            "subtext":     "#64748B",
+            "border":      "#E2E8F0",
+            "pill_bg":     "#DBEAFE",
+            "pill_text":   "#1D4ED8",
+        },
+        "Dracula": {
+            "bg":          "#282A36",
+            "card":        "#44475A",
+            "accent":      "#FF79C6",
+            "accent2":     "#50FA7B",
+            "text":        "#F8F8F2",
+            "subtext":     "#6272A4",
+            "border":      "#6272A4",
+            "pill_bg":     "#44475A",
+            "pill_text":   "#FF79C6",
+        },
+    }
+
+    t = themes[theme]
+
+    st.markdown(f"""
+    <style>
+    /* ── Hide deploy button ── */
+    [data-testid="stToolbar"] {{
+        display: none !important;
+    }}
+                
+    /* ── Header / top bar ── */
+    [data-testid="stHeader"] {{
+        background-color: {t['bg']} !important;
+    }}
+
+    /* ── Top toolbar buttons (Deploy, 3 dots) ── */
+    [data-testid="stHeader"] button {{
+        color: {t['text']} !important;
+    }}
+    [data-testid="stHeader"] a {{
+        color: {t['text']} !important;
+    }}
+
+    /* ── Main block container top padding area ── */
+    [data-testid="stAppViewContainer"] {{
+        background-color: {t['bg']} !important;
+    }}
+
+    /* ── The decorative top color strip Streamlit adds ── */
+    [data-testid="stDecoration"] {{
+        background-color: {t['bg']} !important;
+        background-image: none !important;
+    }}
+    
+    /* ── App background ── */
+    .stApp {{
+        background-color: {t['bg']};
+    }}
+
+    /* ── Sidebar ── */
+    [data-testid="stSidebar"] {{
+        background-color: {t['card']};
+        border-right: 1px solid {t['border']};
+    }}
+    [data-testid="stSidebar"] * {{
+        color: {t['text']} !important;
+    }}
+
+    /* ── Main text ── */
+    .stApp, .stApp p, .stApp h1, .stApp h2, .stApp h3, .stApp label {{
+        color: {t['text']} !important;
+    }}
+
+    /* ── Metric cards ── */
+    [data-testid="metric-container"] {{
+        background-color: {t['card']};
+        border: 1px solid {t['border']};
+        border-radius: 12px;
+        padding: 16px;
+    }}
+    [data-testid="metric-container"] * {{
+        color: {t['text']} !important;
+    }}
+    [data-testid="stMetricValue"] {{
+        color: {t['accent']} !important;
+        font-size: 1.4rem !important;
+    }}
+
+    /* ── Multiselect pills ── */
+    [data-testid="stMultiSelect"] span[data-baseweb="tag"] {{
+        background-color: {t['pill_bg']} !important;
+        border: 1px solid {t['accent']} !important;
+        border-radius: 6px !important;
+        padding: 2px 4px !important;
+    }}
+    [data-testid="stMultiSelect"] span[data-baseweb="tag"] span {{
+        color: {t['pill_text']} !important;
+        font-size: 0.75rem !important;
+    }}
+
+    /* ── Select/input boxes ── */
+    [data-baseweb="select"] > div:last-child {{
+        background-color: {t['card']} !important;
+        border-color: {t['border']} !important;
+        color: {t['text']} !important;
+    }}
+    [data-baseweb="input"] {{
+        background-color: {t['card']} !important;
+        border-color: {t['border']} !important;
+        color: {t['text']} !important;
+    }}
+
+    /* ── Buttons ── */
+    .stButton button {{
+        background-color: {t['accent']} !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+    }}
+
+    /* ── Dividers ── */
+    hr {{
+        border-color: {t['border']} !important;
+    }}
+
+    /* ── Dataframe ── */
+    [data-testid="stDataFrame"] {{
+        border: 1px solid {t['border']};
+        border-radius: 8px;
+    }}
+
+    /* ── Radio buttons ── */
+    [data-testid="stRadio"] label {{
+        color: {t['text']} !important;
+    }}
+
+    /* ── Subtext / captions ── */
+    .stApp .stCaption {{
+        color: {t['subtext']} !important;
+    }}
+    </style>
+    """, unsafe_allow_html=True)
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 def render_sidebar(df: pd.DataFrame):
+    st.sidebar.title("💰 Personal Finance")
+    
+    theme = st.sidebar.selectbox(
+        "Theme",
+        ["Linear/Notion Dark", "Arctic", "Dracula"],
+        index=1
+    )
+    
+    inject_theme(theme)
+    
+    st.sidebar.divider()
     st.sidebar.title("Filters")
 
     # Date range
