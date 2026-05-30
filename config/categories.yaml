@@ -1,5 +1,6 @@
 categories:
   Excluded:
+    category: Excluded
     color: "#2C3E50"
     keywords:
       - american express ach pmt
@@ -12,12 +13,13 @@ categories:
       - "to SAV ...7723"
       - "from SAV ...7723"
 
-  Requires Manul categorization:
+  Requires Manual categorization:
     color: "#FFFFFF"
     keywords: 
       - amex dining credit
 
-  Income:
+  Salary:
+    category: Income
     color: "#2ECC71"
     keywords:
       - payroll
@@ -27,6 +29,7 @@ categories:
       - interest paid
 
   Groceries:
+    category: Food
     color: "#ADD8E6"
     keywords:
       - instacart
@@ -50,6 +53,7 @@ categories:
       - Water Gourmet Anaheim CA
   
   Food & Drink:
+    category: Food
     color: "#FF6B6B"
     keywords:
       - JOE  THE JUICE SFO L San Francisco CA
@@ -122,6 +126,7 @@ categories:
 
   
   Dining Out:
+    category: Food
     color: "#FF8E53"
     keywords:
       - restaurant
@@ -147,24 +152,45 @@ categories:
       - shabu
       - red robin
 
-  Vices: 
-    color: "#C1685B"
+  Smokeshops: 
+    category: Vices
+    color: "#680C07"
     keywords:
       - anaheim smoke shop
       - smoke and vape
-      - fox pub
-      - dlr oga's cantina
-      - dlr paradise beer
+      - smoke shop
+  
+  Alcohol at home:
+    category: Vices
+    color: "#BC544B"
+    keywords:
       - magic land market
+      - liquor store
+      - bevmo
+
+  Bars & Nightclubs:
+    category: Vices
+    color: "#D0312D"
+    keywords: 
+      - fox pub
       - paper plane
-      - muldoons irish newport beach
       - bar
       - pub
+      - muldoons irish newport beach
       - tst* the biergarten
       - nv lounge anaheim
-      - smoke shop
+      - dlr oga's cantina
+      - dlr paradise beer
+
+  Gambling:
+    category: Vices
+    color: "#7E2811"
+    keywords:
+      - casino
+
 
   Coffee:
+    category: Food
     color: "#6F4E37"
     keywords: 
       - 7 leaves
@@ -179,6 +205,7 @@ categories:
       - starbucks
 
   Transportation:
+    category: Transportation
     color: "#4ECDC4"
     keywords:
       - uber
@@ -201,11 +228,9 @@ categories:
       - WAVE-1
 
   Shopping:
-    color: "#45B7D1"
+    category: Shopping
+    color: "#9966CC"
     keywords:
-      - amazon
-      - amzn
-      - target
       - walmart
       - WAL-MART
       - kohls
@@ -243,7 +268,16 @@ categories:
       - dhgate
       - fanatics
 
+  Home Essentials:
+    category: Shopping
+    color: "#C8A2C8"
+    keywords:
+      - amazon
+      - amzn
+      - target
+
   Health & Fitness:
+    category: Lifestyle
     color: "#96CEB4"
     keywords:
       - cvs
@@ -262,6 +296,7 @@ categories:
       - kaiser
 
   Entertainment:
+    category: Lifestyle
     color: "#9B59B6"
     keywords:
       - netflix
@@ -303,6 +338,7 @@ categories:
 
 
   Travel:
+    category: Lifestyle
     color: "#3498DB"
     keywords:
       - airline
@@ -321,6 +357,7 @@ categories:
 
 
   Bills & Utilities:
+    category: Required Expenses
     color: "#E74C3C"
     keywords:
       - att
@@ -344,6 +381,7 @@ categories:
         amount: 2.99
 
   Personal Care:
+    category: Lifestyle
     color: "#F39C12"
     keywords:
       - salon
@@ -356,6 +394,7 @@ categories:
 
 
   Rent:
+    category: Required Expenses
     color: "#E67E22"
     keywords:
       - bilt payment
@@ -363,6 +402,7 @@ categories:
       - greystar
 
   Student Loans:
+    category: Required Expenses
     color: "#8E44AD"
     keywords:
       - advs ed serv
@@ -372,11 +412,13 @@ categories:
   
 
   Car Payment:
+    category: Required Expenses
     color: "#C0392B"
     keywords:
       - sdccu
 
   Auto Services:
+    category: Transportation
     color: "#E74C3C"
     keywords:
       - an honda
@@ -387,6 +429,7 @@ categories:
       - smog check
 
   Professional Development:
+    category: Other
     color: "#2980B9"
     keywords:
       - vue testing exam
@@ -395,6 +438,7 @@ categories:
 
 
   Zelle, & Paypal:
+    category: Uncategorized
     color: "#5B8CDB"
     keywords:
       - zelle
@@ -402,18 +446,21 @@ categories:
       - apple cash sent
 
   Transfer:
+    category: Uncategorized
     color: "#95A5A6"
     keywords:
       - acct xfer
       - transfer
 
   ATM & Cash:
+    category: Uncategorized
     color: "#7F8C8D"
     keywords:
       - atm withdrawal
       - non-chase atm
 
   Fines & Fees:
+    category: Other
     color: "#D35400"
     keywords:
       - st of ca dmv
@@ -422,6 +469,7 @@ categories:
       - dmv fee
 
   Taxes: 
+    category: Other
     color: "#757484"
     keywords: 
       - freetaxusa
@@ -429,6 +477,7 @@ categories:
       - tax bd
 
   Miscellaneous: 
+    category: Other
     color: "#D3D3D3"
     keywords:
       - usps
@@ -436,5 +485,6 @@ categories:
 
 
   Uncategorized:
+    category: Uncategorized
     color: "#BDC3C7"
     keywords: []

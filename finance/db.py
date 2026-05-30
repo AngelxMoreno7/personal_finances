@@ -16,35 +16,35 @@ def init_db():
     cursor = conn.cursor()
 
     cursor.executescript("""
-        CREATE TABLE IF NOT EXISTS accounts (
-            id           INTEGER PRIMARY KEY AUTOINCREMENT,
-            name         TEXT NOT NULL UNIQUE,
-            account_type TEXT NOT NULL
-        );
-
         CREATE TABLE IF NOT EXISTS categories (
             id    INTEGER PRIMARY KEY AUTOINCREMENT,
-            name  TEXT NOT NULL UNIQUE,
-            color TEXT
+            name  TEXT NOT NULL UNIQUE
+        );
+
+        CREATE TABLE IF NOT EXISTS subcategories (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            name        TEXT NOT NULL UNIQUE,
+            color       TEXT,
+            category_id INTEGER REFERENCES categories(id)
         );
 
         CREATE TABLE IF NOT EXISTS transactions (
-            id               INTEGER PRIMARY KEY AUTOINCREMENT,
-            date             TEXT NOT NULL,
-            description      TEXT NOT NULL,
-            amount           REAL NOT NULL,
-            transaction_type TEXT,
-            type             TEXT,
-            balance          REAL,
-            post_date        TEXT,
-            chase_category   TEXT,
-            amex_category    TEXT,
-            city_state       TEXT,
-            reference        TEXT,
-            account_id       INTEGER REFERENCES accounts(id),
-            category_id      INTEGER REFERENCES categories(id),
+            id                   INTEGER PRIMARY KEY AUTOINCREMENT,
+            date                 TEXT NOT NULL,
+            description          TEXT NOT NULL,
+            amount               REAL NOT NULL,
+            transaction_type     TEXT,
+            type                 TEXT,
+            balance              REAL,
+            post_date            TEXT,
+            chase_category       TEXT,
+            amex_category        TEXT,
+            city_state           TEXT,
+            reference            TEXT,
+            account_id           INTEGER REFERENCES accounts(id),
+            subcategory_id       INTEGER REFERENCES subcategories(id),
             manually_categorized INTEGER DEFAULT 0,
-            hash             TEXT NOT NULL UNIQUE
+            hash                 TEXT NOT NULL UNIQUE
         );
     """)
 

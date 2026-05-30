@@ -4,6 +4,10 @@ from pathlib import Path
 
 CONFIG_PATH = Path(__file__).resolve().parent.parent / "config" / "categories.yaml"
 
+FORCE_UNCATEGORIZED = [
+    "offer:",
+]
+
 
 BANK_CATEGORY_MAP = {
     "transportation-auto services":             "Auto Services",
@@ -55,23 +59,25 @@ BANK_CATEGORY_MAP = {
 def load_categories() -> dict:
     with open(CONFIG_PATH, "r") as f:
         return yaml.safe_load(f)["categories"]
-    
-    
-FORCE_UNCATEGORIZED = [
-    "offer:",
-]
+
+
+def get_subcategory_to_category_map() -> dict[str, str]:
+    """Returns a dict of {subcategory_name: category_name}."""
+    categories = load_categories()
+    return {name: config.get("category", "Uncategorized") for name, config in categories.items()}
 
 
 def categorize(description: str, amount: float = None, chase_category: str = None, amex_category: str = None) -> str:
+    """Returns a subcategory name for a transaction."""
     categories = load_categories()
     description_lower = description.lower()
 
-    # Force uncategorized for specific patterns regardless of bank category
+    # Force uncategorized for specific patterns
     for pattern in FORCE_UNCATEGORIZED:
         if pattern.lower() in description_lower:
             return "Uncategorized"
 
-    # First pass: check amount-specific rules
+    # First pass: amount-specific rules
     if amount is not None:
         for category_name, config in categories.items():
             for rule in config.get("amount_keywords", []):
@@ -103,10 +109,13 @@ def categorize(description: str, amount: float = None, chase_category: str = Non
 
     return "Uncategorized"
 
+def get_category_for_subcategory(subcategory_name: str) -> str:
+    """Returns the parent category name for a given subcategory."""
+    mapping = get_subcategory_to_category_map()
+    return mapping.get(subcategory_name, "Uncategorized")
+
 
 def get_category_colors() -> dict[str, str]:
-    """Returns a dict of {category_name: color} for use in visualizations."""
+    """Returns {subcategory_name: color} for visualizations."""
     categories = load_categories()
     return {name: config.get("color", "#BDC3C7") for name, config in categories.items()}
-
-
