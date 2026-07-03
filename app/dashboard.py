@@ -1,3 +1,14 @@
+"""
+Home page — this replaces your existing dashboard.py.
+The only change is a new render_home() function added above main(),
+and a page selector added to the sidebar so users can switch between
+the home page and the dashboard.
+
+Everything else (load_transactions, inject_theme, render_sidebar,
+render_summary_metrics, render_spending_trend, render_monthly_breakdown,
+render_transaction_table) is unchanged.
+"""
+
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -223,7 +234,7 @@ def inject_theme(theme: str):
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 def render_sidebar(df: pd.DataFrame):
-    st.sidebar.title("💰 Personal Finance")
+    st.sidebar.title("💰 Personal Spending")
     
     theme = st.sidebar.selectbox(
         "Theme",
@@ -402,6 +413,30 @@ def render_monthly_breakdown(df: pd.DataFrame, view_by: str, colors: dict):
 def render_transaction_table(df: pd.DataFrame, all_subcategories: list):
     st.subheader("Transactions")
 
+    with st.expander("How does manual categorization work? →", expanded=False):
+        st.markdown("""
+        **Changing a subcategory**  
+        The Subcategory column is editable. Click any cell in that column to open a dropdown
+        and assign a different subcategory. The change saves to the database instantly — no
+        save button needed.
+
+        **What "manually categorized" means**  
+        Once you change a subcategory here, that transaction is flagged as manually categorized.
+        This protects your override — if you ever run **Save & Recategorize** from the Categories
+        page, the app will re-scan all transactions against your keywords but will skip any
+        transaction you've manually set here. Your manual assignments are never overwritten.
+
+        **Excluding a transaction**  
+        If a transaction shouldn't appear in your spending at all (e.g. a credit card payment,
+        a transfer, an investment), assign it to **Excluded** from the dropdown. It will
+        disappear from all charts and metrics on the next reload.
+
+        **Searching and filtering first**  
+        Use the search and filter controls above the table to narrow down to the transactions
+        you want to fix before editing. This is especially useful for bulk cleanup — filter
+        by subcategory "Uncategorized", then work through the list.
+        """)
+
     col1, col2, col3, col4, col5, col6 = st.columns([2, 1, 1, 1, 1, 1])
 
     with col1:
@@ -413,7 +448,6 @@ def render_transaction_table(df: pd.DataFrame, all_subcategories: list):
         category_options = ["All"] + sorted(df["category"].unique().tolist())
         selected_category = st.selectbox("Category", category_options)
     with col4:
-        # Subcategory options narrow based on selected category
         if selected_category != "All":
             subcat_pool = sorted(df[df["category"] == selected_category]["subcategory"].unique().tolist())
         else:
@@ -448,7 +482,6 @@ def render_transaction_table(df: pd.DataFrame, all_subcategories: list):
         lambda x: f"-${abs(x):,.2f}" if x < 0 else f"${x:,.2f}"
     )
 
-    # Build subcategory options including Excluded
     subcat_options = all_subcategories.copy()
     if "Excluded" not in subcat_options:
         subcat_options = sorted(subcat_options + ["Excluded"])
@@ -478,7 +511,6 @@ def render_transaction_table(df: pd.DataFrame, all_subcategories: list):
         key="transaction_table",
     )
 
-    # Detect and save changes
     changes = edited_df[edited_df["Subcategory"] != display_df["Subcategory"]]
     if not changes.empty:
         conn = get_connection()
@@ -505,26 +537,161 @@ def render_transaction_table(df: pd.DataFrame, all_subcategories: list):
     st.caption(f"{len(table_df):,} transactions")
 
 
+# ── Home page ─────────────────────────────────────────────────────────────────
+def render_home():
+    st.title("👋 Welcome to your Personal Spending Dashboard")
+    st.markdown(
+        "This app brings all your bank and credit card transactions into one place, "
+        "automatically sorts them into spending categories, and helps you see exactly "
+        "where your money is going — month by month."
+    )
+
+    st.divider()
+
+    st.subheader("🚀 Getting started")
+    st.markdown("""
+    Here's the recommended flow to get up and running:
+
+    **1. Set up your categories** *(Categories page)*  
+    Head to the Categories page and make the spending categories your own. The app comes
+    with a set of defaults, but you'll want to add keywords that match the way your
+    specific banks and merchants describe transactions.
+
+    **2. Import your transactions** *(Import page)*  
+    Download a CSV export from your bank or card provider and upload it on the Import page.
+    Select the right source for each file and the app takes care of the rest — parsing,
+    categorizing, and skipping any duplicates automatically.
+
+    **3. Review and clean up** *(Dashboard → Transactions table)*  
+    After importing, check the Transactions table for anything labeled **Uncategorized**
+    and assign it a subcategory directly in the table. Those overrides are saved permanently
+    and won't be touched if you recategorize later.
+
+    **4. Explore your spending** *(Dashboard)*  
+    Filter by date, category, or account from the sidebar. The charts update live so you
+    can zero in on exactly what you want to see.
+    """)
+
+    st.divider()
+
+    st.subheader("🔁 Monthly routine")
+    st.markdown(
+        "Once you're set up, keeping the app current takes just a few minutes each month:"
+    )
+    col1, col2, col3, col4 = st.columns(4)
+    col1.info("**① Download**\nExport CSVs from Chase, Amex, and Venmo for the month")
+    col2.info("**② Import**\nUpload each file on the Import page — duplicates are skipped automatically")
+    col3.info("**③ Review**\nCheck for new Uncategorized transactions and assign them")
+    col4.info("**④ Explore**\nOpen the Dashboard and see how the month looked")
+
+    st.caption(
+        "💡 Venmo only allows monthly CSV exports — download one file per month "
+        "and import each separately."
+    )
+
+    st.divider()
+
+    st.subheader("📄 Supported sources")
+    st.markdown("""
+    | Source | Where to download |
+    |---|---|
+    | Chase Checking | chase.com → Accounts → Download |
+    | Chase Credit | chase.com → Accounts → Download |
+    | American Express | americanexpress.com → Statements → Download CSV |
+    | Venmo | venmo.com → Statements → Download CSV |
+    """)
+
+    st.divider()
+
+    st.subheader("🗂️ What's in the app")
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.markdown("**📊 Dashboard**")
+        st.caption(
+            "Your main spending view — summary metrics, a monthly trend chart, "
+            "a category breakdown, and a searchable transaction table with inline editing."
+        )
+    with col2:
+        st.markdown("**📥 Import**")
+        st.caption(
+            "Upload CSVs from your bank or card provider. "
+            "The app handles parsing, deduplication, and categorization automatically."
+        )
+    with col3:
+        st.markdown("**🗂️ Categories**")
+        st.caption(
+            "Customize the categories and keywords used to sort your transactions. "
+            "Changes take effect on future imports, or across all existing transactions "
+            "if you choose Save & Recategorize."
+        )
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 def main():
-    st.title("💰 Personal Finance Dashboard")
-
     df = load_transactions()
     colors = get_category_colors()
 
-    (
-        start_date,
-        end_date,
-        view_by,
-        selected_categories,
-        selected_subcategories,
-        selected_accounts,
-        all_subcategories,
-    ) = render_sidebar(df)
+    # Determine which page to show via sidebar nav
+    st.sidebar.title("💰 Personal Spending")
+
+    theme = st.sidebar.selectbox(
+        "Theme",
+        ["Linear/Notion Dark", "Arctic", "Dracula"],
+        index=1
+    )
+    inject_theme(theme)
+
+    st.sidebar.divider()
+    page = st.sidebar.radio("Navigate", ["🏠 Home", "📊 Dashboard"], label_visibility="collapsed")
+
+    if page == "🏠 Home":
+        render_home()
+        return
+
+    # ── Dashboard ─────────────────────────────────────────────────────────────
+    st.title("💰 Personal Spending Dashboard")
+
+    st.sidebar.title("Filters")
+
+    min_date = df["date"].min().date()
+    max_date = df["date"].max().date()
+    start_date, end_date = st.sidebar.date_input(
+        "Date range",
+        value=(min_date, max_date),
+        min_value=min_date,
+        max_value=max_date,
+    )
+
+    view_by = st.sidebar.radio("View by", ["Category", "Subcategory"], horizontal=True)
+
+    all_categories = sorted(df["category"].unique().tolist())
+    selected_categories = st.sidebar.multiselect(
+        "Categories",
+        options=all_categories,
+        default=[c for c in all_categories if c not in ("Income", "Uncategorized")],
+    )
+
+    filtered_subcats = sorted(
+        df[df["category"].isin(selected_categories)]["subcategory"].unique().tolist()
+    )
+    all_subcategories = sorted(df["subcategory"].unique().tolist())
+    selected_subcategories = st.sidebar.multiselect(
+        "Subcategories",
+        options=filtered_subcats,
+        default=filtered_subcats,
+    )
+
+    all_accounts = sorted(df["account_name"].unique().tolist())
+    selected_accounts = st.sidebar.multiselect(
+        "Accounts",
+        options=all_accounts,
+        default=all_accounts,
+    )
 
     filtered_df = df[
-        (df["date"] >= start_date) &
-        (df["date"] <= end_date) &
+        (df["date"] >= pd.Timestamp(start_date)) &
+        (df["date"] <= pd.Timestamp(end_date)) &
         (df["category"].isin(selected_categories)) &
         (df["subcategory"].isin(selected_subcategories)) &
         (df["account_name"].isin(selected_accounts))
